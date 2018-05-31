@@ -1,3 +1,5 @@
 #!/usr/bin/env ruby
 
 require "nouhin"
+
+Nouhin::CLI.start
