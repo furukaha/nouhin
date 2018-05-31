@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["nikkeiheikinkabuka@gmail.com"]
 
   spec.summary       = "納品物管理コマンドライン・ツール(CLI)"
-  spec.description   = "アーカイブでソースの納品を求められる場合に納品対象物を管理するためのコマンド"
+  spec.description   = "アーカイブでソースの納品を求められる環境下で、納品対象物を管理するためのコマンド"
   spec.homepage      = "https://github.com/furukaha/nouhin"
   spec.license       = "MIT"
 

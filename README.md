@@ -1,9 +1,16 @@
 # Nouhin
 
-dev
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/nouhin`. To experiment with that code, run `bin/console` for an interactive prompt.
+納品物管理コマンドライン・ツール(CLI) - アーカイブでソースの納品を求められる環境下で、納品対象物を管理するためのコマンド.
 
-TODO: Delete this and the text above, and describe your gem
+## Description
+git でバージョン管理するほどの案件ではなかったり、git で顧客とつながるほどの案件でなかったり、アーカイブ納品で済んでしまう状況はよくあることです。
+しかし「あれ？どれが修正したソースで、どれを納品すればいいんだっけ？ 抜け漏れが心配だなぁ」そんな状況もよくあることです。
+そんなときにこれがあれば、納品対象のソース管理が簡単になります。
+* git と似たような感じで使えます。
+* add で管理対象ステージに追加して、reset でアンステージします。commit で納品対象物をアーカイブ化します。
+* ローカル完結です。リモートも ssh-key の設定などもありません。
+* バージョン管理はしていません。あくまで納品対象物の管理です。
+くわしくは `nouhin help` を参照してください。
 
 ## Installation
 
@@ -22,24 +29,16 @@ Or install it yourself as:
     $ gem install nouhin
 
 ## Usage
+    $ nouhin -h
+    nouhin commands:
+      nouhin add FILE        # FILE を納品対象としてインデックスに登録します.
+      nouhin commit FILE     # 納品対象のファイルをまとめたアーカイブ FILE を作成します.
+      nouhin compress FILE   # 納品対象のファイルをまとめたアーカイブ FILE を作成します.
+      nouhin expand FILE     # アーカイブ FILE を展開します.
+      nouhin help [COMMAND]  # Describe available commands or one specific command
+      nouhin init            # 納品対象を管理するインデックスファイル(~/nouhin_files.index)を初期化します.
+      nouhin list            # 現在 納品対象として管理されているファイルを一覧で表示します.
+      nouhin reset FILE      # FILE を納品対象から外します.
+      nouhin status          # 現在 納品対象として管理されているファイルを一覧で表示します.
+      nouhin test FILE       # アーカイブ FILE の中身を一覧で表示します.
 
-TODO: Write usage instructions here
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/nouhin. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Nouhin project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/nouhin/blob/master/CODE_OF_CONDUCT.md).
-# nouhin
