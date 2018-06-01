@@ -47,7 +47,11 @@ Or install it yourself as:
       nouhin status          # 現在 納品対象として管理されているファイルを一覧で表示します.
       nouhin test FILE       # アーカイブ FILE の中身を一覧で表示します.
 
-ユーザーホームディレクトリ(~/)に、納品対象インデックス [ ~/nouhin_files.index ] が作られます。
+* ユーザーホームディレクトリ(~/)に、納品対象インデックス [ ~/nouhin_files.index ] が作られます。
+* 作成/修正したファイルを `nouhin add FILE` で納品対象としてマークします。
+* テストが完了して納品する段階になったら `nouhin commit FILE` で納品用アーカイブファイルを作ります。
+* 作成したアーカイブファイルを納品して終了です。
+* 新しく納品対象を管理する場合は `nouhin init` で納品対象インデックスを初期化します。
 
 ## Requirement
 command `tar`
