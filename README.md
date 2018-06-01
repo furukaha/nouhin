@@ -56,3 +56,6 @@ Or install it yourself as:
 
 ## Requirement
 command `tar`
+
+## TODO
+* `nouhin push` でリモートサーバーに SCP で送る機能必要？ もしくはメール送信？
