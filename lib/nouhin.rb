@@ -1,4 +1,5 @@
 require "nouhin/version"
+require "fileutils"
 require "thor"
 
 module Nouhin
