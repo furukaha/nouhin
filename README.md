@@ -71,7 +71,7 @@ Or install it yourself as:
 * `tar -zcvf` コマンドのオプションをそのたびに調べていませんか？ 使わないと忘れちゃいますよね。
 * よかったですね。これからは`nouhin compress FILE` `nouhin expand FILE`で済みます。 
 
-##FAQ
+## FAQ
 Q.`nouhin add FILE`した後でそのファイルの名前を変更しました。どうしたらいいですか？  
 A.`nouhin reset OLDFILE`するか`~/nouhin_files.index`をエディタで開いて該当行を削除してください。その後あらためて`nouhin add NEWFILE`してください。
 
