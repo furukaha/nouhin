@@ -53,7 +53,7 @@ module Nouhin
       raise "停止します。" unless $stdin.gets.chomp == "y"
       files = File.read(INDEX_FILE)
       files.gsub!(/^#{dirname}/,".")
-      `tar -zcvf #{basename} #{files.split.uniq.join(" ")}`
+      puts `tar -zcvf #{basename} #{files.split.uniq.join(" ")}`
       puts "[ #{path} ] アーカイブファイルを作成しました。"
       puts "中身を確認する場合は [ test FILE ] オプションを実行してください。"
     end
