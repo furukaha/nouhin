@@ -47,7 +47,7 @@ Or install it yourself as:
       nouhin status          # 現在 納品対象として管理されているファイルを一覧で表示します.
       nouhin test FILE       # アーカイブ FILE の中身を一覧で表示します.
 
-* ユーザーホームディレクトリ(~/)に、納品対象インデックス [ ~/nouhin_files.index ] が作られます。
+* ユーザーホームディレクトリ(~/)に、納品対象インデックス ` ~/nouhin_files.index` が作られます。
 * 作成/修正したファイルを `nouhin add FILE` で納品対象としてマークします。
 * 間違ってマークした場合は `nouhin reset FILE` で納品対象から外します。
 * テストが完了して納品する段階になったら `nouhin commit FILE` で納品用アーカイブファイルを作ります。
@@ -61,15 +61,9 @@ Or install it yourself as:
 * もちろんユーザー登録だとか秘密鍵といった設定も必要ありません。
 * あるのは「それが納品対象かどうか」だけです。
 * simple is beautiful.
+* 「バージョン管理ってよくわからないし、怖い」という方は意外と多いです。
 * `nouihn add FILE`はファイルに「納品予定」という付箋を貼って歩くイメージです。
 * `nouhin commit FILE`はそれらをひとまとめにして段ボールに放り込むイメージです。
-* simple is beautiful.
-* 「バージョン管理ってよくわからないし、怖い」という方は意外と多いです。
-* 他の人に迷惑をかけたくないと考えるのは当然です。
-* `nouhin commit FILE`はあくまでローカルで動作します。安心してください、失敗しても困るのはあなただけです。
-* simple is beautiful.
-* `tar -zcvf` コマンドのオプションをそのたびに調べていませんか？ 使わないと忘れちゃいますよね。
-* よかったですね。これからは`nouhin compress FILE` `nouhin expand FILE`で済みます。 
 
 ## FAQ
 Q.`nouhin add FILE`した後でそのファイルの名前を変更しました。どうしたらいいですか？  
@@ -78,6 +72,14 @@ A.`nouhin reset OLDFILE`するか`~/nouhin_files.index`をエディタで開い�
 
 Q.`nouhin add FILE`するのは、ファイルの修正まえがいいですか？ 修正後にしたほうがいいですか？  
 A.どちらでも構いません。「それが納品対象かどうか」だけを考えてください。`nouhin add FILE`はファイルに「納品予定」という付箋を貼るようなイメージです。
+
+
+Q.納品ファイルの一覧を保存しておきたいのですが、どうすればいいですか？  
+A.` ~/nouhin_files.index`を保管してください。そのファイルを復元することで再び同じファイルを commit することが可能になります。
+
+Q.間違えて同じファイルを２回 add してしまいました。大丈夫ですか？  
+A.問題ありません。commit したときに重複排除されます。それでも気になるようであれば`~/nouhin_files.index`をエディタで開いて該当行を削除することもできます。
+
 
 ## Requirement
 command `tar`
