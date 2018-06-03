@@ -1,6 +1,7 @@
 require "spec_helper.rb"
 require "nouhin"
 #require "fileutils"
+require "tmpdir"
 
 RSpec.describe Nouhin do
   it "has a version number" do
@@ -8,6 +9,8 @@ RSpec.describe Nouhin do
   end
 
   before(:all) do
+    #stub_const("Nouhin::CLI::INDEX_FILE", "#{ENV['TMP']}/nouhin_files_rspec.index")
+    Nouhin::CLI::INDEX_FILE = "#{Dir.tmpdir}/nouhin_files_rspec.index"
     Dir.chdir("spec/fixtures/server_b/")
     FileUtils.rm_rf(  Dir.glob('./dir*') )
     Dir.chdir("../server_a/")
@@ -32,6 +35,7 @@ RSpec.describe Nouhin do
     file111 = "dir1/dir11/file_1_11"
     file112 = "dir1/dir12/file_1_12"
     file12  = "dir2/file_2"
+
     $stdin = StringIO.new("y")
     Nouhin::CLI.new.init
     Nouhin::CLI.new.add file111
