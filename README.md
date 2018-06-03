@@ -37,24 +37,28 @@ Or install it yourself as:
 ## Usage
 
     $ nouhin -h
-    nouhin commands:
+    Nouhin commands:
       nouhin add FILE        # FILE を納品対象としてインデックスに登録します.
       nouhin commit FILE     # 納品対象のファイルをまとめたアーカイブ FILE を作成します.
-      nouhin compress FILE   # 納品対象のファイルをまとめたアーカイブ FILE を作成します.
-      nouhin expand FILE     # アーカイブ FILE を展開します.
+      nouhin compress FILE   # （同上)
+      nouhin extract FILE    # アーカイブ FILE を展開します.
+      nouhin expand FILE     # （同上)
       nouhin help [COMMAND]  # Describe available commands or one specific command
       nouhin init            # 納品対象を管理するインデックスファイル(~/nouhin_files.index)を初期化します.
-      nouhin list            # 現在 納品対象として管理されているファイルを一覧で表示します.
       nouhin reset FILE      # FILE を納品対象から外します.
+      nouhin delete FILE     # （同上)
       nouhin status          # 現在 納品対象として管理されているファイルを一覧で表示します.
-      nouhin test FILE       # アーカイブ FILE の中身を一覧で表示します.
+      nouhin list            # （同上)
+      nouhin -l              # （同上)
 
 * ユーザーホームディレクトリ(~/)に、納品対象インデックス ` ~/nouhin_files.index` が作られます。
 * 作成/修正したファイルを `nouhin add FILE` で納品対象としてマークします。
 * 間違ってマークした場合は `nouhin reset FILE` で納品対象から外します。
 * テストが完了して納品する段階になったら `nouhin commit FILE` で納品用アーカイブファイルを作ります。
+* commit はワーキングツリーの表層、rails で言えば app_name/ あたりで実行するといいでしょう。
 * 作成したアーカイブファイルを納品して終了です。
 * 新しく納品対象を管理する場合は `nouhin init` で納品対象インデックスを初期化します。
+* `nouhin init` するまでインデックスの内容は保持されます。
 
 ## Features
 
@@ -67,7 +71,7 @@ Or install it yourself as:
 * 「バージョン管理ってよくわからないし、怖い」という方は意外と多いです。
 * `nouihn add FILE`はファイルに「納品予定」という付箋を貼って歩くイメージです。
 * `nouhin commit FILE`はそれらをひとまとめにして段ボールに放り込むイメージです。
-* tar の展開オプションを覚えていますか？ 納品される側もこれからは `nouhin expand FILE` で一発です。
+* tar の展開オプションを覚えていますか？ 納品される側もこれからは `nouhin extract FILE` で一発です。
 
 ## FAQ
 Q.`nouhin add FILE`した後でそのファイルの名前を変更しました。どうしたらいいですか？  
