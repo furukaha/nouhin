@@ -63,11 +63,11 @@ module Nouhin
       files.gsub!(/^#{dirname}/,".")
       puts `tar -zcvf #{basename} #{files.split.uniq.join(" ")}`
       puts "[ #{path} ] アーカイブファイルを作成しました。"
-      puts "中身を確認する場合は [ test FILE ] オプションを実行してください。"
+      puts "中身を確認する場合は [ extract FILE --test ] オプションを実行してください。"
     end
 
     desc "extract FILE", "アーカイブ FILE を展開します."
-    method_options test: false
+    method_options test: false, :aliases => '-t', desc: "実際に展開せずに、一覧を表示します."
     def extract(file)
       path = file_check(file)
       # --test が指定されていたらアーカイブの内容を一覧表示して終了
