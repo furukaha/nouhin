@@ -4,8 +4,9 @@ require "thor"
 
 module Nouhin
   class CLI < Thor
-    package_name "nouhin"
+    package_name "Nouhin"
     map "compress" => :commit
+    map "delete" => :reset
     map "list" => :status
     map "-l" => :status
     map "expand" => :extract
@@ -18,7 +19,7 @@ module Nouhin
       puts "[ #{INDEX_FILE} ] を初期化します。"
       puts "よろしいですか？ [ y/n ]"
       #
-      raise "停止します。" unless gets.chomp == "y"
+      raise "停止します。" unless $stdin.gets.chomp == "y"
       File.open(INDEX_FILE,'w'){|f| f = nil}
     end
 
@@ -57,7 +58,7 @@ module Nouhin
       puts "[ #{dirname} ] をアーカイブの基点 [ ./ ] とします。"
       puts "よろしいですか？ [ y/n ]"
       #
-      raise "停止します。" unless gets.chomp == "y"
+      raise "停止します。" unless $stdin.gets.chomp == "y"
       files = File.read(INDEX_FILE)
       files.gsub!(/^#{dirname}/,".")
       puts `tar -zcvf #{basename} #{files.split.uniq.join(" ")}`
@@ -66,17 +67,17 @@ module Nouhin
     end
 
     desc "extract FILE", "アーカイブ FILE を展開します."
-    method_options :test => :boolean
+    method_options test: false
     def extract(file)
       path = file_check(file)
       # --test が指定されていたらアーカイブの内容を一覧表示して終了
-      (puts `tar -ztvf #{path}`; return)if options.test?
+      (puts `tar -ztvf #{path}`; return) if options.test?
       #
       puts `tar -ztvf #{path}`
       puts "現在のディレクトリ [ ./ ] を基点として、上記のファイルを展開します。"
       puts "よろしいですか？ [ y/n ]"
       #
-      raise "停止します。" unless gets.chomp == "y"
+      raise "停止します。" unless $stdin.gets.chomp == "y"
       puts `tar -zxvf #{path}`
     end
 
