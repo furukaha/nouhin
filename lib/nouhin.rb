@@ -5,11 +5,20 @@ require "thor"
 module Nouhin
   class CLI < Thor
     package_name "nouhin"
+    map "compress" => :commit
+    map "list" => :status
+    map "-l" => :status
+    map "expand" => :extract
+
     INDEX_FILE = "#{Dir.home}/nouhin_files.index"
     FileUtils.touch(INDEX_FILE) unless File.exist?(INDEX_FILE)
 
     desc "init", "納品対象を管理するインデックスファイル(~/nouhin_files.index)を初期化します."
     def init
+      puts "[ #{INDEX_FILE} ] を初期化します。"
+      puts "よろしいですか？ [ y/n ]"
+      #
+      raise "停止します。" unless gets.chomp == "y"
       File.open(INDEX_FILE,'w'){|f| f = nil}
     end
 
@@ -23,7 +32,7 @@ module Nouhin
 
     desc "reset FILE", "FILE を納品対象から外します."
     def reset(file)
-      path = file_check(file)
+      path = File.expand_path(file)
       files = File.read(INDEX_FILE).split
       files.delete(path)
       File.open(INDEX_FILE,"w") do |f|
@@ -36,8 +45,6 @@ module Nouhin
     def status
       File.foreach(INDEX_FILE){|f| puts f}
     end
-    desc "list", "現在 納品対象として管理されているファイルを一覧で表示します."
-    alias_method :list, :status
 
     desc "commit FILE", "納品対象のファイルをまとめたアーカイブ FILE を作成します."
     def commit(file)
@@ -50,7 +57,7 @@ module Nouhin
       puts "[ #{dirname} ] をアーカイブの基点 [ ./ ] とします。"
       puts "よろしいですか？ [ y/n ]"
       #
-      raise "停止します。" unless $stdin.gets.chomp == "y"
+      raise "停止します。" unless gets.chomp == "y"
       files = File.read(INDEX_FILE)
       files.gsub!(/^#{dirname}/,".")
       puts `tar -zcvf #{basename} #{files.split.uniq.join(" ")}`
@@ -58,23 +65,18 @@ module Nouhin
       puts "中身を確認する場合は [ test FILE ] オプションを実行してください。"
     end
 
-    desc "compress FILE", "納品対象のファイルをまとめたアーカイブ FILE を作成します."
-    alias_method :compress, :commit
-    
-    desc "test FILE", "アーカイブ FILE の中身を一覧で表示します."
-    def test(file)
+    desc "extract FILE", "アーカイブ FILE を展開します."
+    method_options :test => :boolean
+    def extract(file)
       path = file_check(file)
-      puts `tar -ztvf #{path}`
-    end
-
-    desc "expand FILE", "アーカイブ FILE を展開します."
-    def expand(file)
-      path = file_check(file)
+      # --test が指定されていたらアーカイブの内容を一覧表示して終了
+      (puts `tar -ztvf #{path}`; return)if options.test?
+      #
       puts `tar -ztvf #{path}`
       puts "現在のディレクトリ [ ./ ] を基点として、上記のファイルを展開します。"
       puts "よろしいですか？ [ y/n ]"
       #
-      raise "停止します。" unless $stdin.gets.chomp == "y"
+      raise "停止します。" unless gets.chomp == "y"
       puts `tar -zxvf #{path}`
     end
 
