@@ -13,7 +13,6 @@ Gem::Specification.new do |spec|
   spec.description   = "アーカイブでソースの納品を求められる環境下で、納品対象物を管理するためのコマンド"
   spec.homepage      = "https://github.com/furukaha/nouhin"
   spec.license       = "MIT"
-  spec.metadata      = { "source_code_uri" => "https://github.com/furukaha/nouhin" }
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
