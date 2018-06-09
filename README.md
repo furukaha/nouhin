@@ -103,7 +103,7 @@ A.そのディレクトリに作成された `.nouhin/` ディレクトリを削
 
 
 ## Requirement
-system-command `tar`
+system-command `tar`  
 system-command `diff`
 
 
