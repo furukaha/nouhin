@@ -1,91 +1,81 @@
 require "nouhin/version"
 require "fileutils"
+require "tmpdir"
 require "thor"
+Dir.glob("#{File.dirname(__FILE__)}/nouhin/commands/*rb").each{|file| require file}
 
 module Nouhin
   class CLI < Thor
     package_name "Nouhin"
     map "compress" => :commit
     map "delete" => :reset
+    map "remove" => :reset
     map "list" => :status
     map "-l" => :status
     map "expand" => :extract
+    class_option :force, :type => :boolean, :desc => "メッセージインターフェイスを抑制し強制的に実行します."
 
-    INDEX_FILE = "#{Dir.home}/nouhin_files.index"
-    FileUtils.touch(INDEX_FILE) unless File.exist?(INDEX_FILE)
-
-    desc "init", "納品対象を管理するインデックスファイル(~/nouhin_files.index)を初期化します."
-    def init
-      puts "[ #{INDEX_FILE} ] を初期化します。"
-      puts "よろしいですか？ [ y/n ]"
-      #
-      raise "停止します。" unless $stdin.gets.chomp == "y"
-      File.open(INDEX_FILE,'w'){|f| f = nil}
-    end
-
-    desc "add FILE", "FILE を納品対象としてインデックスに登録します."
-    def add(file)
-      path = file_check(file)
-      File.open(INDEX_FILE,"a"){|f| f.puts path}
-      puts "[ #{file} ] を納品対象としてマークしました。"
-      puts "取り消しする場合は [ reset FILE ] オプションを実行してください。"
-    end
-
-    desc "reset FILE", "FILE を納品対象から外します."
-    def reset(file)
-      path = File.expand_path(file)
-      files = File.read(INDEX_FILE).split
-      files.delete(path)
-      File.open(INDEX_FILE,"w") do |f|
-        files.each{|file| f.puts file }
-      end
-      puts "[ #{file} ] は納品対象から外れました。"
-    end
-
-    desc "status", "現在 納品対象として管理されているファイルを一覧で表示します."
-    def status
-      File.foreach(INDEX_FILE){|f| puts f}
-    end
-
-    desc "commit FILE", "納品対象のファイルをまとめたアーカイブ FILE を作成します."
-    def commit(file)
-      path = File.expand_path(file)
-      basename = File.basename(path)
-      basename << ".gz" unless basename =~ /\.gz$/
-      basename.gsub!(/gz$/,"tar.gz") unless basename =~ /\.tar\.gz$/
-      dirname = File.dirname(path)
-      puts "[ #{dirname}/ ] に [ #{basename} ] を作成します。"
-      puts "[ #{dirname} ] をアーカイブの基点 [ ./ ] とします。"
-      puts "よろしいですか？ [ y/n ]"
-      #
-      raise "停止します。" unless $stdin.gets.chomp == "y"
-      files = File.read(INDEX_FILE)
-      files.gsub!(/^#{dirname}/,".")
-      puts `tar -zcvf #{basename} #{files.split.uniq.join(" ")}`
-      puts "[ #{path} ] アーカイブファイルを作成しました。"
-      puts "中身を確認する場合は [ extract FILE --test ] オプションを実行してください。"
-    end
-
-    desc "extract FILE", "アーカイブ FILE を展開します."
-    method_options test: false, :aliases => '-t', desc: "実際に展開せずに、一覧を表示します."
-    def extract(file)
-      path = file_check(file)
-      # --test が指定されていたらアーカイブの内容を一覧表示して終了
-      (puts `tar -ztvf #{path}`; return) if options.test?
-      #
-      puts `tar -ztvf #{path}`
-      puts "現在のディレクトリ [ ./ ] を基点として、上記のファイルを展開します。"
-      puts "よろしいですか？ [ y/n ]"
-      #
-      raise "停止します。" unless $stdin.gets.chomp == "y"
-      puts `tar -zxvf #{path}`
+    def initialize(*args)
+      super(*args)
+      @dot_nouhin_path = dot_nouhin_path
+      return @can_start = false unless @dot_nouhin_path
+      @root_path = File.dirname(@dot_nouhin_path)
+      @index_file_path = @dot_nouhin_path + "/nouhin_files.index"
+      @ignore_file_path = @dot_nouhin_path + "/nouhinignore"
+      @repository_file_path = @dot_nouhin_path + "/repository.tar.gz"
+      return @can_start = true
     end
 
     private
-    def file_check(file)
-      path = File.expand_path(file)
-      raise "ファイルが存在しません。" if !File.exist?(path)
-      return path
+    # 実行場所が作業ツリーの範囲内でなければ停止する
+    def can_start?
+      (puts "ここは作業領域ではありません.停止します."; exit) unless @can_start
     end
-  end
-end
+
+    # ignore ファイルから tar の exclude オプションを生成する
+    def exclude_options(ignore_file_path)
+      ar = File.read(ignore_file_path)
+      ar = ar.split("\n")
+      ar.map! do |r|
+        r.gsub!(/#.*$/,""); r.gsub!(/^\s*?$/,"")
+        r.gsub!(/^\//,"./"); r.gsub!(/\/$/,"/*")
+        r
+      end
+      ar =  ar.delete_if{|r|r==""}
+      ar.map! do |r|
+        "--exclude '" + r + "'"
+      end
+      return ar.join(" ")
+    end
+
+    # .nouhin ディレクトリを現在のディレクトリからさかのぼって探す
+    def dot_nouhin_path
+      Dir.pwd.split("/").count.times do |n|
+        path = "../"*n + ".nouhin/"
+        return File.expand_path(path) if Dir.exist?(path)
+      end
+      return false
+    end
+
+    # --force が指定されていたらメッセージインターフェイス抑制
+    def puts(msg)
+      super unless options[:force]
+    end
+
+    # モンキーパッチ
+    def gets
+      return options[:force] ? "y"  : $stdin.gets
+    end
+
+    # 対象ファイル存在チェック
+    def fpath(file)
+      File.expand_path(file)
+    end
+
+    def file_check(file)
+      path = fpath(file)
+      (puts "ファイルが存在しません."; exit) if !File.exist?(path)
+      return path
+    end # def
+  end # class
+end # module

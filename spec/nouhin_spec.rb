@@ -1,6 +1,6 @@
 require "spec_helper.rb"
 require "nouhin"
-#require "fileutils"
+require "fileutils"
 require "tmpdir"
 
 RSpec.describe Nouhin do
@@ -9,9 +9,7 @@ RSpec.describe Nouhin do
   end
 
   before(:all) do
-    #stub_const("Nouhin::CLI::INDEX_FILE", "#{ENV['TMP']}/nouhin_files_rspec.index")
-    Nouhin::CLI::INDEX_FILE = "#{Dir.tmpdir}/nouhin_files_rspec.index"
-    Dir.chdir("spec/fixtures/server_b/")
+    Dir.chdir("#{File.dirname(__FILE__)}/fixtures/server_b/")
     FileUtils.rm_rf(  Dir.glob('./dir*') )
     Dir.chdir("../server_a/")
     FileUtils.rm_rf(  Dir.glob('./*.tar.gz') )
@@ -21,34 +19,61 @@ RSpec.describe Nouhin do
     file111 = "dir1/dir11/file_1_11"
     path = File.expand_path(file111)
 
-    $stdin = StringIO.new("y")
-    Nouhin::CLI.new.init
+    #Nouhin::CLI.new.init [], {force: true}
+    Nouhin::CLI.new.invoke(:init, [], {force: true})
     expect{ Nouhin::CLI.new.status }.to output("").to_stdout
-    Nouhin::CLI.new.add file111
+    Nouhin::CLI.new.invoke(:add, [file111], {force: true})
     expect{ Nouhin::CLI.new.status }.to output(path+"\n").to_stdout
-    Nouhin::CLI.new.reset file111
+    Nouhin::CLI.new.invoke(:reset, [file111], {force: true})
     expect{ Nouhin::CLI.new.status }.to output("").to_stdout
-    $stdin = STDIN
   end
 
   it "commit - extract" do
-    file111 = "dir1/dir11/file_1_11"
-    file112 = "dir1/dir12/file_1_12"
-    file12  = "dir2/file_2"
-
-    $stdin = StringIO.new("y")
-    Nouhin::CLI.new.init
-    Nouhin::CLI.new.add file111
-    Nouhin::CLI.new.add file112
-    Nouhin::CLI.new.add file12
-    $stdin = StringIO.new("y")
-    Nouhin::CLI.new.commit "test"
+    make_archive()
     expect(File.exist?("./test.tar.gz")).to be true
     Dir.chdir("../server_b/")
-    $stdin = StringIO.new("y")
-    Nouhin::CLI.new.extract "../server_a/test.tar.gz"
+    Nouhin::CLI.new.invoke(:extract, ["../server_a/test.tar.gz"],  {force: true, "-d": "../server_b/"})
     expect(File.exist?("./dir2/file_2")).to be true
-    $stdin = STDIN
   end
 
+  it "checkout - checkout_all" do
+    make_archive()
+    File.write("dir2/file_2", "change!")
+    Nouhin::CLI.new.invoke(:checkout, ["dir2/file_2"],  {force: true})
+    expect( File.read("dir2/file_2") ).to eq "test dir2\n"
+
+    File.write("dir2/file_2", "change!")
+    Nouhin::CLI.new.invoke(:checkout_all, [],  {force: true})
+    expect( File.read("dir2/file_2") ).to eq "test dir2\n"
+  end
+
+  it "diff - diff_all" do
+    make_archive()
+    File.write("dir2/file_2", "diffdiff")
+    expect{
+      Nouhin::CLI.new.invoke(:diff, ["dir2/file_2"])
+    }.to output(/diffdiff/).to_stdout
+
+    File.write("dir2/file_2", "diffdiff")
+    expect{
+      Nouhin::CLI.new.invoke(:diff_all, [])
+    }.to output(/diffdiff/).to_stdout
+
+    Nouhin::CLI.new.invoke(:checkout_all, [],  {force: true})
+  end
+
+end
+
+def make_archive
+  Dir.chdir("#{File.dirname(__FILE__)}/fixtures/server_a/")
+
+  file111 = "dir1/dir11/file_1_11"
+  file112 = "dir1/dir12/file_1_12"
+  file12  = "dir2/file_2"
+
+  Nouhin::CLI.new.invoke(:init,   [],        {force: true})
+  Nouhin::CLI.new.invoke(:add,    [file111], {force: true})
+  Nouhin::CLI.new.invoke(:add,    [file112], {force: true})
+  Nouhin::CLI.new.invoke(:add,    [file12],  {force: true})
+  Nouhin::CLI.new.invoke(:commit, ["./test"],  {force: true})
 end
