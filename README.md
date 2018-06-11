@@ -41,6 +41,7 @@ Or install it yourself as:
     $ nouhin -h
     Nouhin commands:
       nouhin add FILE        # FILE を納品対象としてインデックスに登録します.
+      nouhin add_all_to_git  # 納品対象のファイルをすべて [ git add ] します.
       nouhin checkout FILE   # 指定の FILE を修正前の状態に復元します.
       nouhin checkout_all    # 作業領域にあるすべてのファイルを修正前の状態に復元します.
       nouhin commit FILE     # 納品対象のファイルをまとめたアーカイブ FILE を作成します.
